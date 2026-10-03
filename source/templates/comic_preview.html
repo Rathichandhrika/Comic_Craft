@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ story_title | default("Comic Preview") }} — ComicCraft AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="/" class="brand-logo">
+        <div class="logo-icon-box">💥</div>
+        <div class="logo-text">COMIC<span>CRAFT</span> AI</div>
+      </a>
+
+      <div class="header-actions">
+        <a href="/" class="btn-tool">
+          <span>✨</span> New Story
+        </a>
+        {% if pdf_path %}
+        <a href="/{{ pdf_path.lstrip('/') }}" download class="btn-tool btn-tool-primary" id="header-download-btn">
+          <span>📥</span> Download PDF
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main class="container preview-header-bar">
+    
+    <!-- Comic Cover & Meta Banner -->
+    <section class="comic-hero-banner">
+      <div class="banner-top-meta">
+        <div class="comic-issue-tag">ISSUE #01 // COLLECTOR'S EDITION</div>
+        <div class="banner-tags">
+          {% if character_name %}
+          <div class="meta-pill">👤 Hero: <strong>{{ character_name }}</strong></div>
+          {% endif %}
+          {% if setting %}
+          <div class="meta-pill">🌍 World: <strong>{{ setting }}</strong></div>
+          {% endif %}
+          {% if style %}
+          <div class="meta-pill">🎨 Style: <strong>{{ style }}</strong></div>
+          {% endif %}
+          {% if tone %}
+          <div class="meta-pill">🎭 Tone: <strong>{{ tone }}</strong></div>
+          {% endif %}
+          <div class="meta-pill">📑 <strong>{{ layout | length }} Panels</strong></div>
+        </div>
+      </div>
+
+      <h1 class="comic-main-title">{{ story_title | default("The Chronicles of " ~ (character_name | default("Adventure"))) }}</h1>
+      <p class="comic-premise-desc">
+        {{ prompt | default("An epic visual journey generated with AI storytelling and comic illustration.") }}
+      </p>
+    </section>
+
+    <!-- Comic Control Toolbar -->
+    <div class="comic-toolbar">
+      <div class="toolbar-group">
+        <button type="button" class="btn-tool btn-tool-cyan" onclick="openReaderMode(0)">
+          <span>📖</span> Open Fullscreen Reader
+        </button>
+        <button type="button" class="btn-tool" onclick="toggleLayoutView()" id="layout-toggle-btn">
+          <span>🔲</span> Switch to Webtoon Flow
+        </button>
+        <button type="button" class="btn-tool" onclick="copyFullScript()">
+          <span>📋</span> Copy Full Script
+        </button>
+      </div>
+
+      <div class="toolbar-group">
+        {% if pdf_path %}
+        <a href="/{{ pdf_path.lstrip('/') }}" download class="btn-tool btn-tool-primary"
+           onclick="handlePdfDownloadSuccess()">
+          <span>📥</span> Download Graphic Novel PDF
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Comic Board Grid of Panels -->
+    <section class="comic-grid-board" id="comic-board">
+      {% for panel in layout %}
+      <article class="comic-panel-card" id="panel-card-{{ panel.panel }}">
+        
+        <!-- Panel Header Stripe -->
+        <div class="panel-header-stripe">
+          <div class="panel-badge">
+            PANEL <span>0{{ panel.panel }}</span>
+          </div>
+          <div class="panel-header-title">{{ panel.title }}</div>
+        </div>
+
+        <!-- Panel Art Canvas Container -->
+        <div class="panel-image-container" onclick="openLightbox('/{{ panel.image_path.lstrip('/') }}')">
+          <img 
+            id="panel-img-{{ panel.panel }}"
+            src="/{{ panel.image_path.lstrip('/') }}" 
+            alt="Panel {{ panel.panel }}: {{ panel.title }}"
+            class="panel-image"
+            loading="lazy"
+          >
+          <div class="image-zoom-hint">🔍 Zoom Art</div>
+
+          <!-- Dynamic SFX Sticker -->
+          {% if panel.sfx %}
+          <div class="sfx-sticker">
+            *{{ panel.sfx }}*
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Panel Story & Voice Content -->
+        <div class="panel-body">
+          
+          <!-- Narration Caption Box -->
+          {% if panel.caption %}
+          <div class="narration-box">
+            <span class="narration-label">📜 NARRATION</span>
+            {{ panel.caption }}
+          </div>
+          {% endif %}
+
+          <!-- Dialogue Speech Bubble -->
+          {% if panel.dialogue %}
+          <div class="speech-bubble">
+            {{ panel.dialogue }}
+          </div>
+          {% elif not panel.caption %}
+          <!-- Fallback text -->
+          <div class="speech-bubble">
+            {{ panel.text }}
+          </div>
+          {% endif %}
+
+          <!-- Scene Description Quote -->
+          {% if panel.scene_description and panel.scene_description != panel.caption %}
+          <div class="scene-quote">
+            <small><em>Scene: {{ panel.scene_description }}</em></small>
+          </div>
+          {% endif %}
+
+        </div>
+
+        <!-- Panel Footer Tools -->
+        <div class="panel-footer-tools">
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn-mini-tool regen-btn" onclick="regeneratePanel({{ panel.panel }}, '{{ panel.scene_description | replace("'", "\\'") }}')">
+              <span>🔄</span> Regenerate
+            </button>
+            <button type="button" class="btn-mini-tool" onclick="openLightbox('/{{ panel.image_path.lstrip('/') }}')">
+              <span>🔍</span> Lightbox
+            </button>
+          </div>
+          <div>
+            <a href="/{{ panel.image_path.lstrip('/') }}" download="panel_{{ panel.panel }}.png" class="btn-mini-tool">
+              <span>💾</span> Save
+            </a>
+          </div>
+        </div>
+
+      </article>
+      {% endfor %}
+    </section>
+
+    <!-- Bottom Actions Bar -->
+    <div style="text-align: center; margin: 48px 0 64px;">
+      <div style="display: inline-flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+        {% if pdf_path %}
+        <a href="/{{ pdf_path.lstrip('/') }}" download class="btn-tool btn-tool-primary" style="font-size: 1.1rem; padding: 14px 28px;"
+           onclick="handlePdfDownloadSuccess()">
+          <span>📥</span> Download Printable PDF
+        </a>
+        {% endif %}
+        <a href="/" class="btn-tool" style="font-size: 1.1rem; padding: 14px 28px;">
+          <span>🎨</span> Create Another Comic Story
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Fullscreen Digital Comic Reader Modal -->
+  <div id="reader-modal" class="reader-modal">
+    <div class="reader-top-nav">
+      <div class="brand-logo" style="transform: scale(0.9);">
+        <div class="logo-icon-box">💥</div>
+        <div class="logo-text">COMIC<span>CRAFT</span> READER</div>
+      </div>
+      <div class="reader-panel-counter" id="reader-counter">PANEL 1 / {{ layout | length }}</div>
+      <button type="button" class="reader-close-btn" onclick="closeReaderMode()">✕</button>
+    </div>
+
+    <div class="reader-content-stage">
+      <button type="button" class="reader-nav-arrow reader-nav-prev" onclick="prevReaderPanel()">‹</button>
+
+      <div class="reader-card-view">
+        <div class="reader-img-wrap">
+          <img id="reader-img" src="" alt="Reader Panel" class="reader-img">
+        </div>
+        <div class="reader-details">
+          <h3 id="reader-panel-title" style="font-family: var(--font-display); font-size: 1.6rem; color: var(--comic-orange); margin-bottom: 8px;"></h3>
+          <div id="reader-narration" class="narration-box" style="margin-bottom: 12px; display: none;"></div>
+          <div id="reader-dialogue" class="speech-bubble" style="display: none;"></div>
+        </div>
+      </div>
+
+      <button type="button" class="reader-nav-arrow reader-nav-next" onclick="nextReaderPanel()">›</button>
+    </div>
+  </div>
+
+  <!-- Lightbox Zoom Modal -->
+  <div id="lightbox-modal" class="lightbox-modal" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="Zoomed Comic Panel" class="lightbox-img">
+  </div>
+
+  <!-- Floating Toast Notification -->
+  <div id="toast" class="toast-msg">
+    <span id="toast-icon">✨</span>
+    <span id="toast-text">Message</span>
+  </div>
+
+  <!-- Template Data for Reader Mode -->
+  <script>
+    const panelsData = [
+      {% for panel in layout %}
+      {
+        panel: {{ panel.panel }},
+        title: {{ panel.title | tojson }},
+        image_path: "/{{ panel.image_path.lstrip('/') }}",
+        caption: {{ panel.caption | tojson }},
+        dialogue: {{ panel.dialogue | tojson }},
+        sfx: {{ panel.sfx | default("") | tojson }},
+        text: {{ panel.text | tojson }}
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ];
+
+    let currentReaderIndex = 0;
+    let isWebtoonView = false;
+
+    // Lightbox Controls
+    function openLightbox(src) {
+      const modal = document.getElementById('lightbox-modal');
+      const img = document.getElementById('lightbox-img');
+      img.src = src;
+      modal.classList.add('open');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox-modal').classList.remove('open');
+    }
+
+    // Digital Comic Reader Controls
+    function openReaderMode(index = 0) {
+      currentReaderIndex = index;
+      updateReaderStage();
+      document.getElementById('reader-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeReaderMode() {
+      document.getElementById('reader-modal').classList.remove('open');
+      document.body.style.overflow = 'auto';
+    }
+
+    function updateReaderStage() {
+      const p = panelsData[currentReaderIndex];
+      if (!p) return;
+
+      document.getElementById('reader-counter').textContent = `PANEL ${p.panel} / ${panelsData.length}`;
+      document.getElementById('reader-img').src = p.image_path;
+      document.getElementById('reader-panel-title').textContent = `Panel ${p.panel}: ${p.title}`;
+
+      const narrEl = document.getElementById('reader-narration');
+      if (p.caption) {
+        narrEl.innerHTML = `<span class="narration-label">📜 NARRATION</span> ${p.caption}`;
+        narrEl.style.display = 'block';
+      } else {
+        narrEl.style.display = 'none';
+      }
+
+      const diagEl = document.getElementById('reader-dialogue');
+      if (p.dialogue) {
+        diagEl.textContent = p.dialogue;
+        diagEl.style.display = 'block';
+      } else if (p.text && !p.caption) {
+        diagEl.textContent = p.text;
+        diagEl.style.display = 'block';
+      } else {
+        diagEl.style.display = 'none';
+      }
+    }
+
+    function prevReaderPanel() {
+      if (currentReaderIndex > 0) {
+        currentReaderIndex--;
+        updateReaderStage();
+      }
+    }
+
+    function nextReaderPanel() {
+      if (currentReaderIndex < panelsData.length - 1) {
+        currentReaderIndex++;
+        updateReaderStage();
+      }
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      const reader = document.getElementById('reader-modal');
+      if (reader.classList.contains('open')) {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+          nextReaderPanel();
+        } else if (e.key === 'ArrowLeft') {
+          prevReaderPanel();
+        } else if (e.key === 'Escape') {
+          closeReaderMode();
+        }
+      } else if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+
+    // Toggle 2-Col Grid vs 1-Col Webtoon Flow
+    function toggleLayoutView() {
+      const board = document.getElementById('comic-board');
+      const btn = document.getElementById('layout-toggle-btn');
+      isWebtoonView = !isWebtoonView;
+
+      if (isWebtoonView) {
+        board.style.gridTemplateColumns = '1fr';
+        board.style.maxWidth = '780px';
+        board.style.margin = '0 auto 50px';
+        btn.innerHTML = '<span>🔲</span> Switch to Comic Grid';
+        showToast("📱 Switched to Webtoon Vertical Flow!");
+      } else {
+        board.style.gridTemplateColumns = '';
+        board.style.maxWidth = '';
+        board.style.margin = '';
+        btn.innerHTML = '<span>🔲</span> Switch to Webtoon Flow';
+        showToast("📰 Switched to Classic Comic Grid!");
+      }
+    }
+
+    // Copy full script to clipboard
+    function copyFullScript() {
+      let script = `=== ${document.querySelector('.comic-main-title').textContent} ===\n\n`;
+      panelsData.forEach(p => {
+        script += `--- PANEL ${p.panel}: ${p.title} ---\n`;
+        if (p.caption) script += `[NARRATION]: ${p.caption}\n`;
+        if (p.dialogue) script += `[DIALOGUE]: ${p.dialogue}\n`;
+        if (p.sfx) script += `[SFX]: *${p.sfx}*\n`;
+        script += `\n`;
+      });
+
+      navigator.clipboard.writeText(script).then(() => {
+        showToast("📋 Comic script copied to clipboard!");
+      }).catch(() => {
+        showToast("⚠️ Could not copy to clipboard.");
+      });
+    }
+
+    // Live Panel Regeneration via AJAX
+    async function regeneratePanel(panelNum, prompt) {
+      showToast(`🔄 Synthesizing fresh art for Panel ${panelNum}...`);
+      const imgEl = document.getElementById(`panel-img-${panelNum}`);
+      if (imgEl) imgEl.style.opacity = '0.5';
+
+      try {
+        const resp = await fetch('/api/regenerate-panel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: prompt,
+            style: {{ style | default("Comic Book") | tojson }},
+            panel_index: panelNum
+          })
+        });
+
+        const data = await resp.json();
+        if (data.success && data.image_path) {
+          const freshUrl = `/${data.image_path.replace(/^(\/|static\/)/, 'static/')}?t=${Date.now()}`;
+          if (imgEl) {
+            imgEl.src = freshUrl;
+            imgEl.style.opacity = '1';
+          }
+          // Update reader array
+          const pObj = panelsData.find(p => p.panel === panelNum);
+          if (pObj) pObj.image_path = freshUrl;
+          showToast(`✅ Panel ${panelNum} art successfully updated!`);
+        } else {
+          throw new Error("Regeneration failed");
+        }
+      } catch (err) {
+        if (imgEl) imgEl.style.opacity = '1';
+        showToast(`⚠️ Regeneration failed. Please try again.`);
+      }
+    }
+
+    // Toast helper
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-text');
+      text.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // Trigger success redirect after download click
+    function handlePdfDownloadSuccess() {
+      showToast("📥 PDF downloaded! Preparing celebration...");
+      setTimeout(() => {
+        window.location.href = "/export-success?pdf_path={{ pdf_path.lstrip('/') | urlencode }}";
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

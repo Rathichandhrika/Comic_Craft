@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ComicCraft AI — Next-Gen AI Comic & Story Creator</title>
+  <meta name="description" content="Turn your story ideas into stunning multi-panel comics with Gemini AI storytelling and dynamic visual art generation.">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+
+  <!-- Site Navigation Header -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="/" class="brand-logo" id="home-logo">
+        <div class="logo-icon-box">💥</div>
+        <div class="logo-text">COMIC<span>CRAFT</span> AI</div>
+      </a>
+
+      <div class="header-actions">
+        <div class="header-status-pill">
+          <div class="status-dot"></div>
+          <span>Gemini & Vision Engine Online</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Hero Area -->
+  <main class="container">
+    <section class="hero-section">
+      <div class="hero-badge">⚡ Next-Gen Graphic Novel Studio</div>
+      <h1 class="hero-title">Bring Your Stories To Life With <span class="gradient-text">AI Comics</span></h1>
+      <p class="hero-subtitle">
+        Write an idea or pick a spark. Gemini plans the storyboard, pens punchy character dialogues, and synthesizes cinematic comic book art for every panel.
+      </p>
+
+      <!-- Instant Story Sparks -->
+      <div class="preset-sparks-wrap">
+        <div class="preset-title">✨ Instant Story Sparks (Click to load)</div>
+        <div class="preset-pills">
+          <button type="button" class="preset-pill-btn" onclick="loadSpark('cyberpunk')">
+            <span>🚀</span> Neon Heist
+          </button>
+          <button type="button" class="preset-pill-btn" onclick="loadSpark('dragon')">
+            <span>🐉</span> Shadow Dragon
+          </button>
+          <button type="button" class="preset-pill-btn" onclick="loadSpark('noir')">
+            <span>🕵️‍♂️</span> Noir Detective
+          </button>
+          <button type="button" class="preset-pill-btn" onclick="loadSpark('space')">
+            <span>🌌</span> Sentient Star
+          </button>
+          <button type="button" class="preset-pill-btn" onclick="loadSpark('samurai')">
+            <span>⚔️</span> Ronin Blade
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comic Studio Creator Form -->
+    <section class="creator-card">
+      <form action="/generate" method="post" id="comic-form" onsubmit="handleFormSubmit(event)">
+        <div class="form-grid-layout">
+          
+          <!-- Left Column: Story & Narrative -->
+          <div class="form-col-narrative">
+            <div class="form-section-title">
+              <span>📖</span> 1. The Narrative Script
+            </div>
+
+            <!-- Story Prompt Field -->
+            <div class="form-group">
+              <div class="label-row">
+                <label for="prompt">
+                  <span>Story Premise / Outline</span>
+                </label>
+                <button type="button" class="magic-spark-btn" onclick="randomizeStory()">
+                  <span>🎲</span> Surprise Me
+                </button>
+              </div>
+              <textarea 
+                id="prompt" 
+                name="prompt" 
+                required 
+                placeholder="A rogue netrunner breaches a fortified orbital satellite to retrieve the memories of a forgotten civilization..."
+              ></textarea>
+            </div>
+
+            <!-- Main Character & Archetype -->
+            <div class="form-group">
+              <div class="label-row">
+                <label for="character_name">Main Character Name</label>
+                <span class="label-badge">Protagonist</span>
+              </div>
+              <input 
+                id="character_name" 
+                name="character_name" 
+                type="text" 
+                required 
+                placeholder="e.g., Kaelen Vance, Commander Nova, Lyra"
+              >
+              <div class="archetype-pills">
+                <span class="arch-chip" onclick="setArchetype('Cyber-Samurai')">⚔️ Cyber-Samurai</span>
+                <span class="arch-chip" onclick="setArchetype('Rebel Hacker')">💻 Rebel Hacker</span>
+                <span class="arch-chip" onclick="setArchetype('Shadow Alchemist')">🔮 Shadow Alchemist</span>
+                <span class="arch-chip" onclick="setArchetype('Hardboiled Detective')">🕵️ Detective</span>
+                <span class="arch-chip" onclick="setArchetype('Star Corsair')">🚀 Star Corsair</span>
+              </div>
+            </div>
+
+            <!-- Setting & Tone in Two Columns -->
+            <div class="two-cols">
+              <div class="form-group">
+                <label for="setting">World & Setting</label>
+                <select id="setting" name="setting">
+                  <option value="Neo-Tokyo Cyber City">Neo-Tokyo Cyber City</option>
+                  <option value="Enchanted Eldoria Kingdom">Enchanted Eldoria Kingdom</option>
+                  <option value="Deep Orbital Space Station">Deep Space Station</option>
+                  <option value="1940s Rain-Slicked Noir Metropolis">1940s Noir Metropolis</option>
+                  <option value="Sunken Cyber-Atlantis">Sunken Cyber-Atlantis</option>
+                  <option value="Post-Apocalyptic Wasteland">Apocalyptic Wasteland</option>
+                  <option value="High School of Espionage">Academy of Espionage</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="tone">Story Tone</label>
+                <select id="tone" name="tone">
+                  <option value="Epic & Dramatic">Epic & Dramatic</option>
+                  <option value="Gritty & Mysterious">Gritty & Mysterious</option>
+                  <option value="Light-Hearted & Fun">Light-Hearted & Fun</option>
+                  <option value="Dark & Ominous">Dark & Ominous</option>
+                  <option value="Poetic & Surreal">Poetic & Surreal</option>
+                  <option value="Action-Packed Superhero">Action-Packed</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Visual Style & Panel Setup -->
+          <div class="form-col-visuals">
+            <div class="form-section-title">
+              <span>🎨</span> 2. Visual Direction
+            </div>
+
+            <!-- Visual Art Style Cards -->
+            <div class="form-group">
+              <div class="label-row">
+                <label>Comic Art Style</label>
+                <span class="label-badge">Visual Engine</span>
+              </div>
+              <div class="style-grid">
+                
+                <input type="radio" name="style" id="style-comic" value="Comic Book" class="style-card-radio" checked>
+                <label for="style-comic" class="style-card-label">
+                  <span class="style-icon">💥</span>
+                  <span class="style-name">Modern Comic</span>
+                  <span class="style-badge">Bold Inks</span>
+                </label>
+
+                <input type="radio" name="style" id="style-manga" value="Anime" class="style-card-radio">
+                <label for="style-manga" class="style-card-label">
+                  <span class="style-icon">⚡</span>
+                  <span class="style-name">Manga / Anime</span>
+                  <span class="style-badge">Speedlines</span>
+                </label>
+
+                <input type="radio" name="style" id="style-cyber" value="Cyberpunk" class="style-card-radio">
+                <label for="style-cyber" class="style-card-label">
+                  <span class="style-icon">🌆</span>
+                  <span class="style-name">Cyberpunk</span>
+                  <span class="style-badge">Neon Glow</span>
+                </label>
+
+                <input type="radio" name="style" id="style-watercolor" value="Watercolor" class="style-card-radio">
+                <label for="style-watercolor" class="style-card-label">
+                  <span class="style-icon">🎨</span>
+                  <span class="style-name">Watercolor</span>
+                  <span class="style-badge">Artisan</span>
+                </label>
+
+                <input type="radio" name="style" id="style-dark" value="Dark Fantasy" class="style-card-radio">
+                <label for="style-dark" class="style-card-label">
+                  <span class="style-icon">🌑</span>
+                  <span class="style-name">Dark Fantasy</span>
+                  <span class="style-badge">Gothic Grim</span>
+                </label>
+
+                <input type="radio" name="style" id="style-pixel" value="Pixel Art" class="style-card-radio">
+                <label for="style-pixel" class="style-card-label">
+                  <span class="style-icon">🕹️</span>
+                  <span class="style-name">Pixel Art</span>
+                  <span class="style-badge">16-Bit Retro</span>
+                </label>
+
+              </div>
+            </div>
+
+            <!-- Panel Count Selection -->
+            <div class="form-group">
+              <div class="label-row">
+                <label>Comic Panel Sequence</label>
+                <span class="label-badge">Length</span>
+              </div>
+              <div class="panel-count-pills">
+                <input type="radio" name="panel_count" id="count-3" value="3" class="count-radio">
+                <label for="count-3" class="count-label">3 Panels</label>
+
+                <input type="radio" name="panel_count" id="count-4" value="4" class="count-radio">
+                <label for="count-4" class="count-label">4 Panels</label>
+
+                <input type="radio" name="panel_count" id="count-5" value="5" class="count-radio" checked>
+                <label for="count-5" class="count-label">5 Panels (Pro)</label>
+
+                <input type="radio" name="panel_count" id="count-6" value="6" class="count-radio">
+                <label for="count-6" class="count-label">6 Panels</label>
+              </div>
+            </div>
+
+            <!-- Features Highlights -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border-subtle); border-radius: var(--radius-sm); padding: 14px; margin-top: 18px; font-size: 0.82rem; color: var(--text-secondary);">
+              <div style="display: flex; gap: 8px; margin-bottom: 6px; align-items: center; color: var(--comic-cyan); font-weight: 700;">
+                <span>✨ Studio Highlights</span>
+              </div>
+              <ul style="padding-left: 18px; line-height: 1.6; margin: 0;">
+                <li>Gemini Flash analyzes story pacing & generates structured outlines.</li>
+                <li>Authentic character dialogue bubbles, captions & sound effects (SFX).</li>
+                <li>Digital comic reader mode & instant graphic novel PDF export.</li>
+              </ul>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-btn-wrap">
+          <button id="submit-btn" type="submit" class="btn-primary-action">
+            <span>💥</span> ASSEMBLE MY COMIC
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Animated Loading Overlay Screen -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-box">
+      <div class="loading-spinner-art">
+        <div class="spinner-outer"></div>
+        <div class="spinner-inner"></div>
+        <div class="spinner-icon">🎨</div>
+      </div>
+
+      <h2 class="loading-title">CRAFTING YOUR COMIC</h2>
+      <p class="loading-subtitle" id="loading-status-text">
+        Gemini is drafting the storyboard and cinematic scene prompts...
+      </p>
+
+      <!-- Live Step Checklist -->
+      <div class="loading-steps">
+        <div class="load-step active" id="step-1">
+          <div class="step-indicator">1</div>
+          <span>🧠 Gemini: Deconstructing story into comic outline</span>
+        </div>
+        <div class="load-step" id="step-2">
+          <div class="step-indicator">2</div>
+          <span>💬 Scripting dialogues, narrations & SFX stickers</span>
+        </div>
+        <div class="load-step" id="step-3">
+          <div class="step-indicator">3</div>
+          <span>🎨 Synthesizing high-res visual comic panels</span>
+        </div>
+        <div class="load-step" id="step-4">
+          <div class="step-indicator">4</div>
+          <span>📐 Assembling graphic novel layout & printable PDF</span>
+        </div>
+      </div>
+
+      <!-- Shimmer Progress Bar -->
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+
+      <div class="comic-tip" id="comic-tip-text">
+        💡 "Did you know? Comic books pioneered dynamic foreshortening to make action burst out of the frame."
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    const sparks = {
+      cyberpunk: {
+        prompt: "In the rain-drenched underbelly of Neo-Tokyo, a cybernetic thief infiltrates a corporate research spire to extract an AI consciousness rumored to possess free will.",
+        character: "Kaelen Vance",
+        setting: "Neo-Tokyo Cyber City",
+        tone: "Gritty & Mysterious",
+        style: "Cyberpunk",
+        panelCount: 5
+      },
+      dragon: {
+        prompt: "A rookie beast-tamer stumbles upon an injured shadow drake in the forbidden mountain peaks, forging an unbreakable telepathic bond to defend the realm.",
+        character: "Lyra Moonveil",
+        setting: "Enchanted Eldoria Kingdom",
+        tone: "Epic & Dramatic",
+        style: "Dark Fantasy",
+        panelCount: 5
+      },
+      noir: {
+        prompt: "A weathered private eye investigates a string of missing jazz club musicians in 1940s Chicago, uncovering a supernatural shadow cult beneath the pavement.",
+        character: "Detective Sterling",
+        setting: "1940s Rain-Slicked Noir Metropolis",
+        tone: "Gritty Noir",
+        style: "Comic Book",
+        panelCount: 4
+      },
+      space: {
+        prompt: "On the outermost fringe of the Kuiper belt, a lone research vessel receives a rhythmic harmonic pulse originating from inside a living cosmic singularity.",
+        character: "Commander Nova",
+        setting: "Deep Orbital Space Station",
+        tone: "Poetic & Surreal",
+        style: "Anime",
+        panelCount: 5
+      },
+      samurai: {
+        prompt: "A blind ronin guided only by the resonance of his ancient ancestral katana defends a sacred cherry blossom grove against an elite army of masked shadow demons.",
+        character: "Ren of the Mist",
+        setting: "Ancient Mythic Shrine",
+        tone: "Action-Packed Superhero",
+        style: "Anime",
+        panelCount: 5
+      }
+    };
+
+    const randomIdeas = [
+      { prompt: "An apprentice clockmaker accidentally creates a pocket watch that freezes everything except living memories.", char: "Finnick", setting: "Enchanted Eldoria Kingdom", tone: "Poetic & Surreal", style: "Watercolor" },
+      { prompt: "A deep-sea diver explores an oceanic trench and finds a bustling neon metropolis populated by aquatic humanoids.", char: "Dr. Maya Ramos", setting: "Sunken Cyber-Atlantis", tone: "Epic & Dramatic", style: "Cyberpunk" },
+      { prompt: "A young mechanic builds a battle-ready mech suit out of scrap parts to enter the clandestine underground arena.", char: "Jax 'Sparky'", setting: "Post-Apocalyptic Wasteland", tone: "Action-Packed Superhero", style: "Comic Book" },
+      { prompt: "High school students secretly operate an international superhero syndicate after fourth period.", char: "Zoe Chen", setting: "High School of Espionage", tone: "Light-Hearted & Fun", style: "Pixel Art" }
+    ];
+
+    function loadSpark(key) {
+      const data = sparks[key];
+      if (!data) return;
+      document.getElementById('prompt').value = data.prompt;
+      document.getElementById('character_name').value = data.character;
+      document.getElementById('setting').value = data.setting;
+      document.getElementById('tone').value = data.tone;
+      
+      const styleRadio = document.querySelector(`input[name="style"][value="${data.style}"]`);
+      if (styleRadio) styleRadio.checked = true;
+
+      const countRadio = document.querySelector(`input[name="panel_count"][value="${data.panelCount}"]`);
+      if (countRadio) countRadio.checked = true;
+
+      // Animate card focus
+      document.getElementById('prompt').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('prompt').focus();
+    }
+
+    function randomizeStory() {
+      const choice = randomIdeas[Math.floor(Math.random() * randomIdeas.length)];
+      document.getElementById('prompt').value = choice.prompt;
+      document.getElementById('character_name').value = choice.char;
+      document.getElementById('setting').value = choice.setting;
+      document.getElementById('tone').value = choice.tone;
+      const styleRadio = document.querySelector(`input[name="style"][value="${choice.style}"]`);
+      if (styleRadio) styleRadio.checked = true;
+    }
+
+    function setArchetype(arch) {
+      const charInput = document.getElementById('character_name');
+      const current = charInput.value.trim();
+      if (!current) {
+        charInput.value = arch;
+      } else if (!current.includes(arch)) {
+        charInput.value = `${current} the ${arch}`;
+      }
+    }
+
+    // Comic Trivia for loading screen
+    const comicTrivia = [
+      "💡 Golden Age comics in the 1930s laid the foundation for superhero archetypes that still dominate modern cinema.",
+      "💡 Stan Lee famously co-created Spider-Man, the Avengers, and X-Men in an explosive burst of creativity.",
+      "💡 Halftone Ben-Day dots were originally a printing economy measure that became an iconic pop-art aesthetic.",
+      "💡 Manga reads right-to-left because of historical traditional Japanese vertical text conventions.",
+      "💡 Speech bubble tail orientation subconsciously guides the reader's eye path across the comic page."
+    ];
+
+    function handleFormSubmit(event) {
+      const overlay = document.getElementById('loading-overlay');
+      const btn = document.getElementById('submit-btn');
+      overlay.style.display = 'flex';
+      btn.disabled = true;
+
+      // Step-by-step simulated visual feedback while backend generates
+      let progress = 15;
+      const bar = document.getElementById('progress-bar');
+      const step1 = document.getElementById('step-1');
+      const step2 = document.getElementById('step-2');
+      const step3 = document.getElementById('step-3');
+      const step4 = document.getElementById('step-4');
+      const statusText = document.getElementById('loading-status-text');
+
+      bar.style.width = '20%';
+
+      setTimeout(() => {
+        step1.className = 'load-step completed';
+        step2.className = 'load-step active';
+        bar.style.width = '45%';
+        statusText.textContent = "Writing comic dialogues, character banter, and dramatic captions...";
+      }, 4000);
+
+      setTimeout(() => {
+        step2.className = 'load-step completed';
+        step3.className = 'load-step active';
+        bar.style.width = '75%';
+        statusText.textContent = "Synthesizing high-res visual comic panels with sharp inks...";
+      }, 9000);
+
+      setTimeout(() => {
+        step3.className = 'load-step completed';
+        step4.className = 'load-step active';
+        bar.style.width = '92%';
+        statusText.textContent = "Assembling the comic board and generating printable PDF...";
+      }, 16000);
+
+      // Rotate trivia tips
+      let tipIndex = 0;
+      setInterval(() => {
+        tipIndex = (tipIndex + 1) % comicTrivia.length;
+        document.getElementById('comic-tip-text').textContent = comicTrivia[tipIndex];
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

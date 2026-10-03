@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comic Exported Successfully! — ComicCraft AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999;"></canvas>
+
+  <!-- Site Navigation Header -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="/" class="brand-logo">
+        <div class="logo-icon-box">💥</div>
+        <div class="logo-text">COMIC<span>CRAFT</span> AI</div>
+      </a>
+      <div class="header-actions">
+        <a href="/" class="btn-tool">
+          <span>✨</span> Create New Comic
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Success Card -->
+  <main class="container" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+    <div class="success-card">
+      <div class="success-badge-icon">🎉</div>
+      <div class="hero-badge" style="margin-bottom: 12px; background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.4);">
+        ✓ COMIC MASTERPIECE EXPORTED
+      </div>
+      <h1 class="success-title">GRAPHIC NOVEL COMPLETE!</h1>
+      <p class="success-desc">
+        Your AI-crafted comic story has been synthesized with cinematic illustrations, dialogues, and page layouts. Your PDF is ready for digital reading or high-quality printing!
+      </p>
+
+      <div class="success-actions">
+        {% if pdf_path %}
+        <a href="/{{ pdf_path.lstrip('/') }}" download class="btn-primary-action" style="font-size: 1.25rem; padding: 16px 24px; text-decoration: none;">
+          <span>📥</span> Download Comic PDF Again
+        </a>
+        {% endif %}
+        
+        <a href="/" class="btn-tool" style="justify-content: center; font-size: 1.05rem; padding: 14px 20px;">
+          <span>🎨</span> Craft Another Adventure
+        </a>
+      </div>
+
+      <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); font-size: 0.84rem; color: var(--text-muted);">
+        💡 <em>Tip: You can print your PDF as double-sided A4 booklets to create physical comic books!</em>
+      </div>
+    </div>
+  </main>
+
+  <!-- Confetti Script -->
+  <script>
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const colors = ['#ff334b', '#ff8c42', '#00e5ff', '#ffc837', '#9d4edd', '#10b981', '#ffffff'];
+    const particles = [];
+
+    for (let i = 0; i < 110; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height - height,
+        r: Math.random() * 8 + 3,
+        d: Math.random() * 110,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        tilt: Math.random() * 10 - 10,
+        tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+        tiltAngle: 0
+      });
+    }
+
+    function renderConfetti() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        p.tiltAngle += p.tiltAngleIncremental;
+        p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+        p.tilt = Math.sin(p.tiltAngle - p.r / 3) * 15;
+
+        ctx.beginPath();
+        ctx.lineWidth = p.r;
+        ctx.strokeStyle = p.color;
+        ctx.moveTo(p.x + p.tilt + p.r / 4, p.y);
+        ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 4);
+        ctx.stroke();
+
+        if (p.y > height) {
+          p.x = Math.random() * width;
+          p.y = -20;
+        }
+      });
+      requestAnimationFrame(renderConfetti);
+    }
+    renderConfetti();
+  </script>
+</body>
+</html>
