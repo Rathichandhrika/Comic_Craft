@@ -33,7 +33,7 @@ def is_valid_hf_token(token: str) -> bool:
     }
     return token.strip().lower() not in placeholder_tokens
 
-
+#modified the image generation prompt
 def _generate_huggingface(prompt: str, panel_number: int = 1) -> str:
     """
     Generate an AI image using Hugging Face InferenceClient (FLUX.1-schnell).
